@@ -2,8 +2,10 @@ import { DOCUMENT, ɵgetDOM as getDOM } from '@angular/common';
 import { Inject, Injectable, OnDestroy } from '@angular/core';
 import { ɵSharedStylesHost } from '@angular/platform-browser';
 
+/// this is extracted and overrided from dynamic-browser.js version 15 as on the github source is using older version of angular
+/// reference : https://dev.to/ferdiesletering/how-to-implement-an-inline-styles-content-security-policy-with-angular-and-nginx-2ke2
+/// github older version : https://github.com/ferdiesletering/angular-csp-nonce
 
-/// this is extracted and overrided from dynamic-browsser.js version 15 as on the github source is using older version of angualr
 
 @Injectable()
 export class CustomDomSharedStylesHost
@@ -20,15 +22,12 @@ export class CustomDomSharedStylesHost
     private _metaCSPTag: string
   ) {
     super();
-
     this.doc = doc;
     // Maps all registered host nodes to a list of style nodes that have been added to the host node.
     this.styleRef = new Map();
-
     //this._hostNodes.set(_doc.head, []);
     this.hostNodes = new Set();
     this.resetHostNodes();
-
     this._setCSPNonce();
   }
 
@@ -71,8 +70,7 @@ export class CustomDomSharedStylesHost
     if (this._nonce)
       this._removeCSPNonceHeader();
   }
-
-
+ 
   private _setCSPNonce(): void {
     this._nonce = document
       .querySelector(this._metaCSPTag)
@@ -102,7 +100,7 @@ export class CustomDomSharedStylesHost
 
   //old angular version  
 
-  
+
    // private _addStylesToHost(
   //   styles: Set<string>,
   //   host: Node,
