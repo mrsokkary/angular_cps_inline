@@ -1,5 +1,5 @@
 import { DOCUMENT, ɵgetDOM as getDOM } from '@angular/common';
-import { Inject, Injectable, OnDestroy } from '@angular/core';
+import { Inject, Injectable, OnDestroy, Renderer2 } from '@angular/core';
 import { ɵSharedStylesHost } from '@angular/platform-browser';
 
 /// this is extracted and overrided from dynamic-browser.js version 15 as on the github source is using older version of angular
@@ -48,10 +48,7 @@ export class CustomDomSharedStylesHost
   private addStyleToHost(host: any, style: any) {
     const styleEl = this.doc.createElement('style');
     styleEl.textContent = style;
-
     //added over default
-
-    debugger;
     //without-nonce for testing purpose only no need for it 
     if (!style.includes('without-nonce') && this._nonce) {
       styleEl.setAttribute('nonce', this._nonce);
@@ -70,15 +67,23 @@ export class CustomDomSharedStylesHost
     if (this._nonce)
       this._removeCSPNonceHeader();
   }
- 
+
   private _setCSPNonce(): void {
     this._nonce = document
       .querySelector(this._metaCSPTag)
       ?.getAttribute('content');
+
+    this._nonce = 'Xm7Xn38dvvaLaKbF';//generateRandomNonce(); //static nonce
+
+    const metaTag1 = document.querySelector('meta[name="CSP-NONCE"]');
+    metaTag1!.setAttribute('content', this._nonce);
+
+    // const meta2 = document.querySelector('meta[name="CSP"]');
+    // meta2!.setAttribute('content', `default-src 'self'; style-src 'self' 'nonce-${this._nonce}'; img-src 'self' data:` );
   }
 
   private _removeCSPNonceHeader(): void {
-    document.querySelector(this._metaCSPTag)?.remove();
+    //document.querySelector(this._metaCSPTag)?.remove();
   }
 
   addHost(hostNode: any) {
@@ -101,7 +106,7 @@ export class CustomDomSharedStylesHost
   //old angular version  
 
 
-   // private _addStylesToHost(
+  // private _addStylesToHost(
   //   styles: Set<string>,
   //   host: Node,
   //   styleNodes: Node[]): void {
@@ -140,4 +145,13 @@ export class CustomDomSharedStylesHost
 
 function removeStyle(styleNode: Node): void {
   getDOM().remove(styleNode);
+}
+
+export function generateRandomNonce(): string {
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let nonce = '';
+  for (let i = 0; i < 16; i++) {
+    nonce += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  return nonce;
 }
