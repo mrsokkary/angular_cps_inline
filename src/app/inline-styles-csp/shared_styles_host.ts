@@ -1,10 +1,14 @@
-import { DOCUMENT, ɵgetDOM as getDOM } from '@angular/common';
-import { Inject, Injectable, OnDestroy, Renderer2 } from '@angular/core';
+import { ɵgetDOM as getDOM } from '@angular/common';
+import { Inject, Injectable, OnDestroy } from '@angular/core';
 import { ɵSharedStylesHost } from '@angular/platform-browser';
+import { DOCUMENT } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 
 /// this is extracted and overrided from dynamic-browser.js version 15 as on the github source is using older version of angular
 /// reference : https://dev.to/ferdiesletering/how-to-implement-an-inline-styles-content-security-policy-with-angular-and-nginx-2ke2
 /// github older version : https://github.com/ferdiesletering/angular-csp-nonce
+
+declare var window: any | null;
 
 
 @Injectable()
@@ -19,7 +23,7 @@ export class CustomDomSharedStylesHost
   constructor(
     @Inject(DOCUMENT) private doc: any,
     @Inject('cspMetaSelector')
-    private _metaCSPTag: string
+    private _metaCSPTag: string,
   ) {
     super();
     this.doc = doc;
@@ -49,7 +53,7 @@ export class CustomDomSharedStylesHost
     const styleEl = this.doc.createElement('style');
     styleEl.textContent = style;
     //added over default
-    //without-nonce for testing purpose only no need for it 
+    //without-nonce for testing purpose only no need for it
     if (!style.includes('without-nonce') && this._nonce) {
       styleEl.setAttribute('nonce', this._nonce);
     }
@@ -73,10 +77,20 @@ export class CustomDomSharedStylesHost
       .querySelector(this._metaCSPTag)
       ?.getAttribute('content');
 
-    this._nonce = 'Xm7Xn38dvvaLaKbF';//generateRandomNonce(); //static nonce
+    this._nonce = generateRandomNonce();
 
-    const metaTag1 = document.querySelector('meta[name="CSP-NONCE"]');
-    metaTag1!.setAttribute('content', this._nonce);
+    var meta = document.createElement('meta');
+    meta.setAttribute('http-equiv', 'Content-Security-Policy');
+    meta.setAttribute('name', 'CSP');
+    meta.setAttribute('content', "default-src 'self'; style-src 'self' 'nonce-" + this._nonce + "';");
+    document.head.appendChild(meta);
+
+    // this._nonce =window['nonce']
+
+    //if(this._nonce != null){
+    //  const metaTag1 = document.querySelector('meta[name="CSP-NONCE"]');
+    //  metaTag1!.setAttribute('content', this._nonce);
+    //}
 
     // const meta2 = document.querySelector('meta[name="CSP"]');
     // meta2!.setAttribute('content', `default-src 'self'; style-src 'self' 'nonce-${this._nonce}'; img-src 'self' data:` );
@@ -103,7 +117,7 @@ export class CustomDomSharedStylesHost
     this.resetHostNodes();
   }
 
-  //old angular version  
+  //old angular version
 
 
   // private _addStylesToHost(

@@ -17,14 +17,14 @@ export class AppComponent extends AppComponentBase implements OnInit {
 
   cspMetaTagHtml!: any;
   ngOnInit(): void {
-    debugger;
+    // debugger;
     // this.nonce = generateRandomNonce();
     // const metaTag = document.createElement('meta');
     // metaTag.setAttribute('name', 'CSP-NONCE');
     // metaTag.setAttribute('content', this.nonce);
     // document.head.appendChild(metaTag);
 
-    debugger;
+    // debugger;
     const metaTag = this.renderer.selectRootElement('meta[name="CSP-NONCE"]');
     const content = metaTag.getAttribute('content');
     console.log('content from app_comp : ' + content); // Log the current content value
@@ -46,7 +46,7 @@ export class AppComponent extends AppComponentBase implements OnInit {
     //   this.renderer.setAttribute(cspMetaTag, 'content', `default-src 'self'; style-src 'self' 'nonce-${content}'; img-src 'self' data:`);
     // }
 
-    debugger;
+    // debugger;
   }
   title = 'my-hero';
 }
